@@ -1,0 +1,55 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:8080"
+  },
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/gateway/order/hello",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/hello",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "orderservice",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/dapr/order/hello",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/v1.0/invoke/orderservice/method/hello",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "orderservice",
+          "Port": 3500 // Dapr sidecar port default is 3500
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/payment/hello",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/hello",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "ordersystem.paymentservice.api",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/warehouse/hello",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/hello",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "ordersystem.warehouseservice.api",
+          "Port": 8080
+        }
+      ]
+    }
+  ]
+}

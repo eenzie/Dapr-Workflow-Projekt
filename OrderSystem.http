@@ -1,0 +1,56 @@
+@OrderSystem.ApiGateway.Api_HostAddress = http://localhost:30000/gateway
+
+GET {{OrderSystem.ApiGateway.Api_HostAddress}}/order/hello
+Accept: application/json
+
+###
+
+GET {{OrderSystem.ApiGateway.Api_HostAddress}}/dapr/order/hello
+Accept: application/json
+
+###
+
+
+GET {{OrderSystem.ApiGateway.Api_HostAddress}}/payment/hello
+Accept: application/json
+
+###
+
+GET {{OrderSystem.ApiGateway.Api_HostAddress}}/warehouse/hello
+Accept: application/json
+
+###
+### Run workflow
+@dapr_url=http://localhost:3500 
+@workflow_id={{$guid}}
+
+// @name wfrequest
+POST {{dapr_url}}/v1.0-alpha1/workflows/dapr/OrderWorkflow/start?instanceID={{workflow_id}}
+Content-Type: application/json
+
+{
+  "OrderId": "1234567890",
+  "OrderItems": [
+    {
+      "ItemType": "Computer",
+      "Quantity": 0
+    }
+  ],
+  "OrderDate": "2024-09-26T09:59:07.117Z",
+  "CustomerDto": {
+    "Name": "string",
+    "Email": "string"
+  },
+  "TotalAmount": 0,
+  "Status": "Received",
+  "Amount": 0
+}
+
+### Get status
+@workflow_id_response={{wfrequest.response.body.instanceID}}
+
+GET {{dapr_url}}/v1.0-alpha1/workflows/dapr/{{workflow_id_response}}
+
+###
+GET {{dapr_url}}/v1.0-alpha1/workflows/dapr/e9332510-22dc-4347-9aea-cb6e9e590d94
+
