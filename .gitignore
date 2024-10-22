@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /OrderService/ClassDiagram.cd
 /PaymentService/appsettings.json
 /WarehouseService/appsettings.json
+/Dapr-Workflow-Projekt.AppHost/appsettings.json
