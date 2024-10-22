@@ -6,34 +6,28 @@ using Shared.Queues;
 
 namespace OrderService.DaprWorkflow.Workflows.Activities
 {
-	public class ReserveItemsActivity : WorkflowActivity<OrderItemDto, object?>
-	{
-		private readonly DaprClient _daprClient;
-		private readonly ILogger<NotifyActivity> _logger;
+    public class ReserveItemsActivity : WorkflowActivity<OrderItemDto, object?>
+    {
+        private readonly DaprClient _daprClient;
+        private readonly ILogger<NotifyActivity> _logger;
 
-		public ReserveItemsActivity(DaprClient daprClient, ILogger<NotifyActivity> logger)
-		{
-			_daprClient = daprClient;
-			_logger = logger;
-		}
+        public ReserveItemsActivity(DaprClient daprClient, ILogger<NotifyActivity> logger)
+        {
+            _daprClient = daprClient;
+            _logger = logger;
+        }
 
-		public override async Task<object?> RunAsync(WorkflowActivityContext context, OrderItemDto input)
-		{
-			_logger.LogInformation($"About to publish: {input}");
+        public override async Task<object?> RunAsync(WorkflowActivityContext context, OrderItemDto input)
+        {
+            _logger.LogInformation($"About to publish: {input}");
 
-			var reservationRequestMessage = new ReserveItemsEvent { CorrelationId = context.InstanceId };
+            var reservationRequestMessage = new ReserveItemsEvent { CorrelationId = context.InstanceId };
 
-			await _daprClient.PublishEventAsync(WarehouseChannel.Channel,
-												WarehouseChannel.Topics.Reservation,
-												reservationRequestMessage);
+            await _daprClient.PublishEventAsync(WarehouseChannel.Channel,
+                                                WarehouseChannel.Topics.Reservation,
+                                                reservationRequestMessage);
 
-			return null;
-		}
-	}
-
-	// TODO: Flyttet til Shared.Dtos, for hvad laver det her, Kaj?
-	//public record ItemsDto(OrderItem[] OrderItems)
-	//{
-
-	//}
+            return null;
+        }
+    }
 }

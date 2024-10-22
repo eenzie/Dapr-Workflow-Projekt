@@ -20,10 +20,6 @@ public class OrderWorkflow : Workflow<Order, OrderResult>
             nameof(NotifyActivity),
             new Notification($"Received order {order.ShortId} from {order.CustomerDto.Name}.", newOrder));
 
-        //await context.CallActivityAsync(
-        //    nameof(CreateOrderActivity),
-        //    newOrder);
-
         #endregion
 
         #region Reserve Item(s)
@@ -37,7 +33,7 @@ public class OrderWorkflow : Workflow<Order, OrderResult>
         var itemsToReserve = new InventoryRequestDto(
             newOrder.OrderItems.Select(orderItem => new OrderItemDto(
                 (ItemTypeDto)orderItem.ItemType,  // Enum conversion
-                orderItem.Quantity                 // Quantity stays the same
+                orderItem.Quantity
             )).ToArray()
         );
 

@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Dapr-Workflow-Projekt.ServiceDefaults\Dapr-Workflow-Projekt.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
