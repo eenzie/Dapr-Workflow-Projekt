@@ -18,7 +18,9 @@ public class OrderWorkflow : Workflow<Order, OrderResult>
 
         await context.CallActivityAsync(
             nameof(NotifyActivity),
-            new Notification($"Received order {order.ShortId} from {order.CustomerDto.Name}.", newOrder));
+            new Notification
+                ($"Received order {order.ShortId} from {order.CustomerDto.Name}.",
+                newOrder));
 
         #endregion
 
@@ -31,17 +33,22 @@ public class OrderWorkflow : Workflow<Order, OrderResult>
 
         // Inline conversion using LINQ for array of OrderItem to OrderItemDto
         var itemsToReserve = new InventoryRequestDto(
-            newOrder.OrderItems.Select(orderItem => new OrderItemDto(
+            newOrder.OrderItems
+            .Select(orderItem => new OrderItemDto(
                 (ItemTypeDto)orderItem.ItemType,  // Enum conversion
-                orderItem.Quantity
-            )).ToArray()
+                orderItem.Quantity))
+            .ToArray()
         );
 
-        await context.CallActivityAsync(nameof(ReserveItemsActivity), itemsToReserve);
+        await context.CallActivityAsync(
+            nameof(ReserveItemsActivity),
+            itemsToReserve);
 
         await context.CallActivityAsync(
             nameof(NotifyActivity),
-            new Notification($"Wating for reservation: Order {order.ShortId} from {order.CustomerDto.Name}.", newOrder));
+            new Notification
+                ($"Waiting for reservation: Order {order.ShortId} from {order.CustomerDto.Name}.",
+                newOrder));
 
         var reservationResult = await context.WaitForExternalEventAsync<ItemsReservedResultEvent>(
             ExternalEvents.ItemReservedEvent,
@@ -54,18 +61,21 @@ public class OrderWorkflow : Workflow<Order, OrderResult>
             await context.CallActivityAsync(
                 nameof(NotifyActivity),
                 new Notification(
-                    $"Failed: Order {order.ShortId} " +
-                    $"from {order.CustomerDto.Name}. " +
-                    $"Reservation failed.",
+                    $"Failed: Order {order.ShortId} from {order.CustomerDto.Name}. Reservation failed.",
                     newOrder));
 
-            return new OrderResult(newOrder.Status, newOrder, "Reservation failed.");
+            return new OrderResult(
+                newOrder.Status,
+                newOrder,
+                "Reservation failed.");
         }
 
         newOrder = newOrder with { Status = OrderStatus.SufficientInventory };
         await context.CallActivityAsync(
             nameof(NotifyActivity),
-            new Notification($"Reservation Completed: Order {order.ShortId} from {order.CustomerDto.Name}.", newOrder));
+            new Notification(
+                $"Reservation Completed: Order {order.ShortId} from {order.CustomerDto.Name}.",
+                newOrder));
 
         #endregion
 
@@ -75,11 +85,15 @@ public class OrderWorkflow : Workflow<Order, OrderResult>
 
         var paymentDto = new PaymentDto(newOrder.TotalAmount);
 
-        await context.CallActivityAsync(nameof(ProcessPaymentActivity), paymentDto);
+        await context.CallActivityAsync(
+            nameof(ProcessPaymentActivity),
+            paymentDto);
 
         await context.CallActivityAsync(
             nameof(NotifyActivity),
-            new Notification($"Wating for Payment: Order {order.ShortId} from {order.CustomerDto.Name}.", newOrder));
+            new Notification(
+                $"Wating for Payment: Order {order.ShortId} from {order.CustomerDto.Name}.",
+                newOrder));
 
         var paymentResult = await context.WaitForExternalEventAsync<PaymentProcessedResultEvent>(
             ExternalEvents.PaymentEvent,
@@ -90,7 +104,8 @@ public class OrderWorkflow : Workflow<Order, OrderResult>
             newOrder = newOrder with { Status = OrderStatus.PaymentFailing };
             await context.CallActivityAsync(
                 nameof(NotifyActivity),
-                new Notification($"Failed: Order {order.ShortId} from {order.CustomerDto.Name}. Payment failed.",
+                new Notification(
+                    $"Failed: Order {order.ShortId} from {order.CustomerDto.Name}. Payment failed.",
                     newOrder));
 
             // Compensating transaction - Unreserve the items
@@ -105,13 +120,17 @@ public class OrderWorkflow : Workflow<Order, OrderResult>
         newOrder = newOrder with { Status = OrderStatus.PaymentSuccess };
         await context.CallActivityAsync(
             nameof(NotifyActivity),
-            new Notification($"Payment Completed: Order {order.ShortId} from {order.CustomerDto.Name}.", newOrder));
+            new Notification(
+                $"Payment Completed: Order {order.ShortId} from {order.CustomerDto.Name}.",
+                newOrder));
 
         #endregion
 
         await context.CallActivityAsync(
             nameof(NotifyActivity),
-            new Notification($"Completed: Order {order.ShortId} from {order.CustomerDto.Name}.", newOrder));
+            new Notification(
+                $"Completed: Order {order.ShortId} from {order.CustomerDto.Name}.",
+                newOrder));
 
         return new OrderResult(newOrder.Status, newOrder);
     }

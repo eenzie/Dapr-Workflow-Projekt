@@ -62,5 +62,3 @@ app.MapSubscribeHandler(); // Kun ved explicit pubsub
 app.MapControllers();
 
 app.Run();
-
-

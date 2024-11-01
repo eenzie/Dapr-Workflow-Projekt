@@ -2,7 +2,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 // Dapr Components
 var stateStore = builder.AddDaprStateStore("statestore");
-var workflowChannel = builder.AddDaprPubSub("workflowChannel");
+var workflowChannel = builder.AddDaprPubSub("workflowchannel");
 var paymentChannel = builder.AddDaprPubSub("paymentchannel");
 var warehouseChannel = builder.AddDaprPubSub("warehousechannel");
 
@@ -25,8 +25,5 @@ builder.AddProject<Projects.WarehouseService>("warehouseservice")
     //.WithReference(stateStore)
     .WithReference(workflowChannel)
     .WithReference(warehouseChannel);
-
-// TODO: Har vi brug for Shared projekt?
-//builder.AddProject<Projects.Shared>("shared");
 
 builder.Build().Run();

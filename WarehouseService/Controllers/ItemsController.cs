@@ -23,7 +23,7 @@ public class ItemsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> DoReservation([FromBody] ReserveItemsEvent reserveItemsRequest)
     {
-        _logger.LogInformation($"Payment request received: {reserveItemsRequest.CorrelationId}");
+        _logger.LogInformation($"Inventory request received: {reserveItemsRequest.CorrelationId}");
 
         var itemsReservedResponse = new ItemsReservedResultEvent
         {
@@ -35,7 +35,7 @@ public class ItemsController : ControllerBase
             itemsReservedResponse);
 
         _logger.LogInformation(
-            $"Payment processed: {itemsReservedResponse.CorrelationId}, {itemsReservedResponse.State}");
+            $"Item reserved: {itemsReservedResponse.CorrelationId}, {itemsReservedResponse.State}");
 
         return Ok();
     }
